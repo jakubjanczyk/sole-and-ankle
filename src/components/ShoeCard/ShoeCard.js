@@ -4,6 +4,7 @@ import styled from 'styled-components/macro';
 import { COLORS, WEIGHTS } from '../../constants';
 import { formatPrice, pluralize, isNewShoe } from '../../utils';
 import Spacer from '../Spacer';
+import { css } from 'styled-components'
 
 const ShoeCard = ({
   slug,
@@ -35,15 +36,19 @@ const ShoeCard = ({
     <Link href={`/shoe/${slug}`}>
       <Wrapper>
         <ImageWrapper>
+          {variant !== 'default' && (
+            <Badge variant={variant}>{variant === 'on-sale' ? 'Sale' : 'Just Released!'}</Badge>
+          )}
           <Image alt="" src={imageSrc} />
         </ImageWrapper>
         <Spacer size={12} />
         <Row>
           <Name>{name}</Name>
-          <Price>{formatPrice(price)}</Price>
+          <Price isOnSale={variant === 'on-sale'}>{formatPrice(price)}</Price>
         </Row>
         <Row>
           <ColorInfo>{pluralize('Color', numOfColors)}</ColorInfo>
+          {variant === 'on-sale' && <SalePrice>{formatPrice(salePrice)}</SalePrice>}
         </Row>
       </Wrapper>
     </Link>
@@ -62,11 +67,11 @@ const Wrapper = styled.article`
 
 const ImageWrapper = styled.div`
   position: relative;
-  border-radius: 16px 16px 4px 4px;
 `;
 
 const Image = styled.img`
-width: 100%
+width: 100%;
+  border-radius: 16px 16px 4px 4px;
 `;
 
 const Row = styled.div`
@@ -81,6 +86,11 @@ const Name = styled.h3`
 
 const Price = styled.span`
 margin-left: auto;
+  
+  ${({isOnSale}) => isOnSale && css`
+    text-decoration-line: line-through;
+    color: ${COLORS.gray[700]};
+  `} 
 `;
 
 const ColorInfo = styled.p`
@@ -90,6 +100,28 @@ const ColorInfo = styled.p`
 const SalePrice = styled.span`
   font-weight: ${WEIGHTS.medium};
   color: ${COLORS.primary};
+  margin-left: auto;
+`;
+
+const Badge = styled.div`
+  position: absolute;
+  right: -6px;
+  top: 12px;
+  height: 32px;
+  border-radius: 2px;
+  
+  background-color: ${({variant}) => variant === 'on-sale' ? COLORS.primary : COLORS.secondary};
+  color: white;
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 16px;
+  
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  
 `;
 
 export default ShoeCard;
